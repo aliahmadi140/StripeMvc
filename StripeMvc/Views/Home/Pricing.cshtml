@@ -1,0 +1,18 @@
+﻿@using StripeMvc.Models.ViewModels;
+@model PricingViewModel
+
+
+<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+
+<stripe-pricing-table pricing-table-id="prctbl_1P2TqlJWWKtHpjwk1jxt9tBt"
+                      publishable-key="pk_test_51OsOJ2JWWKtHpjwkAIA4p3v6FZB6qJzA2Woq3V0GLcj24A4DpBmYjExUqAX2ITAMYXFpkzeKaEGXGTmvoesXkYDv00Q1S0NCNO"
+                      customer-email="@Model.Email"
+@* customer-session-client-secret="@Model.CustomerSecretKey" *@>
+</stripe-pricing-table>
+
+
+
+
+
+@{
+}
