@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
+using StripeMvc.Interfaces;
+using StripeMvc.Models.Dtos.UserDtos;
 
 namespace StripeMvc.Controllers
 {
@@ -8,6 +10,13 @@ namespace StripeMvc.Controllers
     [ApiController]
     public class WebhookController : ControllerBase
     {
+        private readonly IUserService _userService;
+
+        public WebhookController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpPost("stripe_webhooks")]
         public async Task<IActionResult> Webhook()
         {
@@ -31,9 +40,13 @@ namespace StripeMvc.Controllers
 
                         break;
 
-                    case "customer.created" :
-                        var customerData= (Customer)stripeEvent.Data.Object;
-                        
+                    case "customer.created":
+                        var customerData = (Customer)stripeEvent.Data.Object;
+                        await _userService.UpdateUserStripeCustomerId(new UserInfroDto
+                        {
+                            Email =customerData.Email,
+                            StripeCustomerId = customerData.Id
+                        });
                         break;
 
                     case "payment_intent.payment_failed":

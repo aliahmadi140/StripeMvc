@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
+using StripeMvc.Interfaces;
 using StripeMvc.Models;
 using StripeMvc.Models.ViewModels;
 using System.Diagnostics;
@@ -10,10 +11,13 @@ namespace StripeMvc.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -27,25 +31,32 @@ namespace StripeMvc.Controllers
         }
 
         [Authorize]
-        public IActionResult Pricing()
+        public async Task<IActionResult> Pricing()
         {
             StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
-
-            var options = new CustomerSessionCreateOptions
+            var stripeCustomerId = await _userService.GetStripeCustomerIdByEmail(User?.Identity?.Name);
+            CustomerSession customerSession = new();
+            if (stripeCustomerId != null)
             {
-                Customer = "cus_PisI8IVPpmJVdq",
-                Components = new CustomerSessionComponentsOptions
+                var options = new CustomerSessionCreateOptions
                 {
-                    PricingTable = new CustomerSessionComponentsPricingTableOptions
+                    Customer = stripeCustomerId,
+                    Components = new CustomerSessionComponentsOptions
                     {
-                        Enabled = true,
+                        PricingTable = new CustomerSessionComponentsPricingTableOptions
+                        {
+                            Enabled = true,
+                        },
                     },
-                },
+                };
+                var service = new CustomerSessionService();
+                customerSession = service.Create(options);
+            }
+            var c = new PricingViewModel
+            {
+                CustomerSecretKey = customerSession.ClientSecret,
+                Email = User?.Identity?.Name
             };
-            var service = new CustomerSessionService();
-            var a = service.Create(options);
-
-            var c = new PricingViewModel { CustomerSecretKey = a.ClientSecret, Email = User?.Identity?.Name };
 
             return View(c);
         }
