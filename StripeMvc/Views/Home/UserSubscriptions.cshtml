@@ -1,0 +1,49 @@
+﻿@using StripeMvc.Models.ViewModels
+@model IEnumerable<UserSubscriptionsViewModel>
+
+
+   
+
+    <div class="container">
+        <h1 class="text-center">Subscribed Plans</h1>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <ul class="list-group">
+                
+                @foreach (var item in Model)
+                {
+                    if (!item.SubscriptionCanceled)
+                    {
+                        
+                    
+                    <div class="row mt-2">
+                        <div class="col-md-6 col-md-offset-3">
+                            <ul class="list-group">
+                            
+                                <li class="list-group-item">
+                                    <h4 class="list-group-item-heading">@item.ProductName</h4>
+                                    <p class="list-group-item-text">Start Date: @item.StartDate</p>
+                                    <p class="list-group-item-text">End Date: @item.EndDate</p>
+                                    <button class="btn btn-danger" type="button"
+                                            onclick="location.href='@Url.Action("DeleteSubscription","Home" ,new {subscriptionId=item.SubscriptionId})'">
+                                        Cancel Plan
+                                    </button>
+                                
+                                            
+                                </li>
+                                 
+                            </ul>
+                        </div>
+                    </div>
+                    }
+                }
+
+            </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+@{
+}

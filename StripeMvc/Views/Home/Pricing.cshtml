@@ -6,15 +6,22 @@
 
 @if (Model.CustomerSecretKey != null)
 {
-    <stripe-pricing-table pricing-table-id="prctbl_1P3yDoJWWKtHpjwk1PdxMEGd"
+
+
+    <stripe-pricing-table pricing-table-id="prctbl_1P53mwJWWKtHpjwk3gwu4hhI"
                           publishable-key="pk_test_51OsOJ2JWWKtHpjwkAIA4p3v6FZB6qJzA2Woq3V0GLcj24A4DpBmYjExUqAX2ITAMYXFpkzeKaEGXGTmvoesXkYDv00Q1S0NCNO"
                           customer-session-client-secret="@Model.CustomerSecretKey">
     </stripe-pricing-table>
+        
+
+    Console.WriteLine(Model.CustomerSecretKey);
 
 }
 else
 {
-    <stripe-pricing-table pricing-table-id="prctbl_1P3yDoJWWKtHpjwk1PdxMEGd"
+
+
+    <stripe-pricing-table pricing-table-id="prctbl_1P53mwJWWKtHpjwk3gwu4hhI"
                           publishable-key="pk_test_51OsOJ2JWWKtHpjwkAIA4p3v6FZB6qJzA2Woq3V0GLcj24A4DpBmYjExUqAX2ITAMYXFpkzeKaEGXGTmvoesXkYDv00Q1S0NCNO"
                           customer-email="@Model.Email">
     </stripe-pricing-table>

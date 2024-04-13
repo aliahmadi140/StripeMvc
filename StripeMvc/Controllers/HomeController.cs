@@ -66,5 +66,59 @@ namespace StripeMvc.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public async Task<IActionResult> UserSubscriptions()
+        {
+            var result = new List<UserSubscriptionsViewModel>();
+
+            StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
+            var service = new SubscriptionService();
+
+            SubscriptionListOptions options = new();
+
+            options.Customer = "cus_Pu99QrBnoSIEeC";
+            options.Status = "active";
+
+
+            StripeList<Subscription> subscriptions = service.List(options);
+
+
+            foreach (var item in subscriptions)
+            {
+                result.Add(new UserSubscriptionsViewModel
+                {
+                    EndDate = item.CurrentPeriodEnd,
+                    StartDate = item.CurrentPeriodStart,
+                    TrialEnd = item.TrialEnd,
+                    ProductName = GetPriceInfo(item.Items.FirstOrDefault().Price.Id),
+                    SubscriptionId = item.Id,
+                    SubscriptionCanceled = item.CancelAt != null ? true : false,
+                });
+
+            }
+
+            return View(result);
+        }
+
+        public async Task<IActionResult> DeleteSubscription(string subscriptionId)
+        {
+            StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
+
+            var options = new SubscriptionUpdateOptions { CancelAtPeriodEnd = true, };
+            var service = new SubscriptionService();
+            service.Update(subscriptionId, options);
+
+            return View("Index");
+        }
+
+
+        private string GetPriceInfo(string priceId)
+        {
+
+            var service = new PriceService();
+            Price priceInfo = service.Get(priceId);
+
+            return priceInfo.Nickname;
+        }
     }
 }
