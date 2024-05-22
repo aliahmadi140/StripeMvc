@@ -5,6 +5,7 @@ using StripeMvc.Interfaces;
 using StripeMvc.Models;
 using StripeMvc.Models.ViewModels;
 using System.Diagnostics;
+using System.Net;
 
 namespace StripeMvc.Controllers
 {
@@ -12,6 +13,7 @@ namespace StripeMvc.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserService _userService;
+
 
 
         public HomeController(ILogger<HomeController> logger, IUserService userService)
@@ -33,7 +35,31 @@ namespace StripeMvc.Controllers
         [Authorize]
         public async Task<IActionResult> Pricing()
         {
+           
+
             StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
+            //var webHookOptions = new WebhookEndpointCreateOptions
+            //{
+            //    EnabledEvents = new List<string> { "*" },
+            //    Url = "http://localhost:4242/stripe_webhooks",
+            //};
+            //var webhookService = new WebhookEndpointService();
+            //webhookService.Create(webHookOptions);
+
+            //var handler = new HttpClientHandler
+            //{
+            //    Proxy = new WebProxy("http://localhost:4242/"),
+            //    UseProxy = true,
+            //};
+            //var httpClient = new HttpClient(handler);
+
+            //var stripeClient = new StripeClient(
+            //    StripeConfiguration.ApiKey,
+            //    httpClient: new SystemNetHttpClient(httpClient),
+            //    apiBase: "web.dev.namava.ir"
+            //);
+            //StripeConfiguration.StripeClient = stripeClient;
+
             var stripeCustomerId = await _userService.GetStripeCustomerIdByEmail(User?.Identity?.Name);
             CustomerSession customerSession = new();
             if (stripeCustomerId != null)
@@ -76,7 +102,7 @@ namespace StripeMvc.Controllers
 
             SubscriptionListOptions options = new();
 
-            options.Customer = "cus_Pu99QrBnoSIEeC";
+            options.Customer = "cus_Q3X3IRcXsPeD92";
             options.Status = "active";
 
 
@@ -100,13 +126,51 @@ namespace StripeMvc.Controllers
             return View(result);
         }
 
+        public async Task<IActionResult> SuccessPyment([FromQuery] string id)
+        {
+
+           
+            try
+            {
+                StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
+
+                var service = new Stripe.Checkout.SessionService();
+                var result = service.Get(id);
+
+                bool isPaid;
+                if (result.PaymentStatus == "paid")
+                {
+                    isPaid = true;
+                }
+
+                var subscription = new SubscriptionService();
+                var a = subscription.Get(result.SubscriptionId);
+                var name = a.Items.FirstOrDefault().Price.Nickname;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+            return Ok();
+        }
+
         public async Task<IActionResult> DeleteSubscription(string subscriptionId)
         {
             StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
+             
 
             var options = new SubscriptionUpdateOptions { CancelAtPeriodEnd = true, };
             var service = new SubscriptionService();
             service.Update(subscriptionId, options);
+
+            //var service = new SubscriptionService();
+            //service.Cancel(subscriptionId);
+
+
+
+
 
             return View("Index");
         }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using StripeMvc.Interfaces;
 using StripeMvc.Models.Dtos.UserDtos;
-
+using Newtonsoft.Json;
 namespace StripeMvc.Controllers
 {
 
@@ -29,6 +29,9 @@ namespace StripeMvc.Controllers
                     Request.Headers["Stripe-Signature"],
                "whsec_4bcbebd4f3f4427ab1cf663c70cbd1b21bc201bfd53f15cd573855f0f77e0dcf"
                 );
+
+                  var rawData = Newtonsoft.Json.JsonConvert.SerializeObject(stripeEvent.Data);
+
                 //  _logger.LogInformation($"Webhook notification with type: {stripeEvent.Type} found for {stripeEvent.Id}");
 
                 PaymentIntent intent = null;
@@ -44,7 +47,7 @@ namespace StripeMvc.Controllers
                         var customerData = (Customer)stripeEvent.Data.Object;
                         await _userService.UpdateUserStripeCustomerId(new UserInfroDto
                         {
-                            Email =customerData.Email,
+                            Email = customerData.Email,
                             StripeCustomerId = customerData.Id
                         });
                         break;
@@ -79,5 +82,7 @@ namespace StripeMvc.Controllers
             return Ok();
         }
 
+
+       
     }
 }

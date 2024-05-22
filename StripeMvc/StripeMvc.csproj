@@ -8,12 +8,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Home\SuccessPyment.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
     <PackageReference Include="Stripe.net" Version="43.22.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Home\SuccessPyment.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Home\SuccessPyment.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Home\SuccessPyment.razor" />
   </ItemGroup>
 
 </Project>
