@@ -35,7 +35,7 @@ namespace StripeMvc.Controllers
         [Authorize]
         public async Task<IActionResult> Pricing()
         {
-           
+
 
             StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
             //var webHookOptions = new WebhookEndpointCreateOptions
@@ -102,7 +102,8 @@ namespace StripeMvc.Controllers
 
             SubscriptionListOptions options = new();
 
-            options.Customer = "cus_Q3X3IRcXsPeD92";
+            options.Customer = await _userService.GetStripeCustomerIdByEmail(User?.Identity?.Name);
+          //  options.Customer = "cus_Q3X3IRcXsPeD92";
             options.Status = "active";
 
 
@@ -129,7 +130,7 @@ namespace StripeMvc.Controllers
         public async Task<IActionResult> SuccessPyment([FromQuery] string id)
         {
 
-           
+
             try
             {
                 StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
@@ -159,7 +160,7 @@ namespace StripeMvc.Controllers
         public async Task<IActionResult> DeleteSubscription(string subscriptionId)
         {
             StripeConfiguration.ApiKey = "sk_test_51OsOJ2JWWKtHpjwkP6AS8BBbgnwaTPLoizaPHCsMY1bkwWwhgFFQhY0lPDNQb8rIp77PMUYmT6L8JBxGqWcBIREh00Qgfj3DMX";
-             
+
 
             var options = new SubscriptionUpdateOptions { CancelAtPeriodEnd = true, };
             var service = new SubscriptionService();
